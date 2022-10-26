@@ -24,6 +24,7 @@ commands ={
     'dcr': 1,
     'dcx': 1,
     'db': 1,
+    'ds': 0,
     'di': 1,
     'ei': 1,
     'hlt': 1,
@@ -81,4 +82,6 @@ commands ={
     'xra': 1,
     'xri': 2,
     'xthl': 1,
+    'org' : 0,
+    'equ' : 0
 }

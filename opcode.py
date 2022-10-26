@@ -2,23 +2,24 @@ from logging import raiseExceptions
 import registers as regs
 import somerandomfunction as srf
 import values
-op_code_table = {
-
-}
 
 def op_code_empty(opcode,arg1,arg2):
     if arg1 != " ":
-        raise SystemError("Argumento inválido")
+        raise SystemError("Muitos argumentos")
     if arg2 != " ":
-        raise SystemError("Argumento inválido")
+        raise SystemError("Muitos argumentos")
     return [opcode]
 
 def op_code_reg(opcode,arg1,arg2):
+    if arg2 != " ":
+        raise SystemError("Muitos argumentos")
     if arg1 not in regs.registers:
         raise SystemError("Argumento inválido")
     else:
         return [opcode+regs.registers[arg1]];
 def op_code_reg2(opcode,opcode2,arg1,arg2):
+    if arg2 != " ":
+        raise SystemError("Muitos argumentos")
     if arg1 not in regs.registers:
         raise SystemError("Argumento inválido")
     else:
@@ -30,26 +31,33 @@ def op_code_reg_lit(opcode,opcode2,arg1,arg2):
 def op_code_regs(opcode,arg1,arg2):
     if arg1 not in regs.registers:
         raise SystemError("Argumento inválido")
-    if arg2 not in regs.registers:
-        raise SystemError("Argumento inválido")
     return [opcode+regs.registers[arg1]+regs.registers[arg2]]
 def op_code_lit(opcode,arg1,arg2):
-    #if arg1 not in regs.registers:
-     #   raise SystemError("Argumento inválido")
-    return [opcode,srf.dec_to_bin(int(arg1)).zfill(8)]
+    if arg2 != " ":
+        raise SystemError("Muitos argumentos")
+    temp = srf.dec_to_bin(int(arg1))
+    if srf.is_number(arg1):
+        raise SystemError("Argumento inválido, somente números")
+    return [opcode,temp.zfill(8)]
 
 def op_code_lit2(opcode1,opcode2,arg1,arg2):
-    #if arg1 not in regs.registers:
-     #   raise SystemError("Argumento inválido")
+    if arg1 not in regs.registers:
+        raise SystemError("Argumento inválido")
+    if arg2 != " ":
+        raise SystemError("Muitos argumentos")
     return [opcode1 + regs.registers[arg1] + opcode2]
 
 def op_code_big(opcode,arg1,arg2):
+    if arg2 != " ":
+        raise SystemError("Muitos argumentos")
     if arg1 not in values.commands:
         raise SystemError("Argumento inválido") 
     temp = srf.dec_to_bin(int(arg1)).zfill(16)
     return [opcode, temp[8:16], temp[0:8]]
 
 def op_code_big_alt(opcode,arg1,arg2,text,alt):
+    if arg2 != " ":
+        raise SystemError("Muitos argumentos")
     index = 0
     if arg1 in text: 
         for label in text:
@@ -63,8 +71,6 @@ def op_code_big_alt(opcode,arg1,arg2,text,alt):
         else:
             temp = srf.dec_to_bin(int(arg1)).zfill(16)
     return [opcode, temp[8:16],temp[0:8]]
-
-
     
 def opcode_special(opcode1, opcode2,arg1,arg2):
     if arg2 is not None:
@@ -80,12 +86,16 @@ def opcode_special(opcode1, opcode2,arg1,arg2):
 
     return [opcode1 + temp + opcode2]
 def opcode_special2(opcode1, opcode2,arg1,arg2):
+    if arg2 != " ":
+        raise SystemError("Muitos argumentos")
     if arg1 not in regs.registers:
         raise SyntaxError('Argumento inválido')
 
     return [opcode1 + regs.registers[arg1] + opcode2]
 
 def opcode_special2_double(opcode1, opcode2,arg1,arg2):
+    if arg2 != " ":
+        raise SystemError("Muitos argumentos")
     temp = srf.dec_to_bin(int(arg1)).zfill(16)
     if arg1 not in regs.registers:
         raise SyntaxError('Argumento inválido')
@@ -96,8 +106,13 @@ def db_treat(arg1):
         raise SyntaxError("Estouro")
     return [temp]
 def ds_treat(arg1):
-    temp = srf.dec_to_bin(int(arg1)).zfill(8)
-    return [temp]
+    temp = []
+    print(type(arg1))
+    for i in range(int(arg1)):
+        temp.append("00000000")
+    return temp
+def treat_org(arg1,texto,ad):
+    return ["00000000"]
 
 op_code_table = {
     'adc': lambda arg1,arg2,text,ad: op_code_reg('10001', arg1,arg2),
@@ -181,7 +196,7 @@ op_code_table = {
     'xri': lambda arg1,arg2,text,ad: op_code_reg('11101110', arg1,arg2),
     'xthl': lambda arg1,arg2,text,ad: op_code_empty('11100011', arg1,arg2),
     'db': lambda arg1,arg2,text,ad: db_treat(arg1),
-    'ds': lambda arg1,arg2,text,ad: ds_treat(arg1)
-    #'org': lambda arg1,arg2,text,ad:,
-    #'equ': lambda arg1,arg2,text,ad: 
+    'ds': lambda arg1,arg2,text,ad: ds_treat(arg1),
+    'org': lambda arg1,arg2,text,ad: treat_org(arg1,arg2,text),
+    'equ': lambda arg1,arg2,text,ad: [""]
 }

@@ -1,3 +1,5 @@
+from ast import literal_eval
+
 def fill_zeros(data,size):
     zero_list = []
     count = 0
@@ -11,4 +13,10 @@ def fill_zeros(data,size):
     zero_list.reverse()
     return zero_list
 def dec_to_bin(n):
-    return bin(n).replace("0b", "")      
+    return bin(n).replace("0b", "")
+def is_number(testable):
+    print(testable)
+    temp = literal_eval(testable)
+    if isinstance(temp,int) or isinstance(temp,float):
+        return True
+    return False 

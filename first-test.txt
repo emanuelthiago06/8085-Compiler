@@ -1,7 +1,10 @@
 VALOR:      DB 4
+VALUE: EQU 0110b
+DS VALUE
 MVI B,4          ;B = 4
             MVI C,2          ;C = 2
             MVI D,0          ;D = 0
+            ORG VALUE
             MVI E,0          ;E = 0
             MOV A,B        ;A = B
 LOOP: INR D              ;D++
